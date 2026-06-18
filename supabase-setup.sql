@@ -1,32 +1,35 @@
 -- =====================================================================
--- TANIT LOUNGE — Supabase setup
--- Run this in your Supabase dashboard:  SQL Editor → New query → paste → Run
--- Project: wuiimhdiqsrvwnoovoxg
+-- KZ CAFÉ LOUNGE — Supabase setup (fresh project, idempotent)
+-- Run in your Supabase dashboard:  SQL Editor → New query → paste → Run
+-- Project: ecbhkcnhgyrppqzrczsz
+-- Safe to re-run: every statement is "if not exists" / drop-then-create.
 -- =====================================================================
 
 -- ---------------------------------------------------------------------
--- 1) ORDERS — add columns for notes and (optional) a stable order code
+-- 1) ORDERS — customer orders + live status
 -- ---------------------------------------------------------------------
-alter table public.orders
-  add column if not exists notes text;
+create table if not exists public.orders (
+  id             uuid primary key default gen_random_uuid(),
+  table_number   text,
+  items          jsonb not null default '[]',          -- [{ name, price, qty }]
+  total          numeric not null default 0,
+  status         text not null default 'pending',       -- pending | preparing | done | cancelled
+  notes          text,
+  table_verified boolean not null default false,         -- confirmed by scanning the table QR
+  created_at     timestamptz not null default now()
+);
 
--- Whether the customer confirmed their table by scanning its QR (anti-fraud).
-alter table public.orders
-  add column if not exists table_verified boolean not null default false;
+-- In case the table pre-existed without these columns:
+alter table public.orders add column if not exists notes text;
+alter table public.orders add column if not exists table_verified boolean not null default false;
 
--- The app uses these status values: pending | preparing | done | cancelled
--- If you have a CHECK constraint on status, replace it so "preparing" is allowed:
+-- status CHECK constraint (drop any old one, re-add with all 4 values)
 do $$
 begin
-  if exists (
-    select 1 from information_schema.constraint_column_usage
-    where table_name = 'orders' and column_name = 'status'
-      and constraint_name = 'orders_status_check'
-  ) then
+  if exists (select 1 from pg_constraint where conname = 'orders_status_check') then
     alter table public.orders drop constraint orders_status_check;
   end if;
 end $$;
-
 alter table public.orders
   add constraint orders_status_check
   check (status in ('pending','preparing','done','cancelled'));
@@ -42,53 +45,8 @@ create table if not exists public.menu_items (
   updated_at     timestamptz not null default now()
 );
 
--- =====================================================================
--- 3) SECURITY (Row Level Security)
---    Run this block LAST and test the app right after.
---    Rollback if anything breaks:  the two "disable row level security"
---    lines at the bottom of this file.
--- =====================================================================
-
--- First wipe ANY pre-existing policies on these tables. (A leftover
--- "allow all" policy from the table's initial setup would otherwise keep
--- granting anon writes, because RLS policies are combined with OR.)
-do $$
-declare pol record;
-begin
-  for pol in select policyname, tablename from pg_policies
-             where schemaname = 'public' and tablename in ('orders','menu_items') loop
-    execute format('drop policy if exists %I on public.%I', pol.policyname, pol.tablename);
-  end loop;
-end $$;
-
--- ORDERS ------------------------------------------------------------
-alter table public.orders enable row level security;
-
--- Customers (anon) may place an order and read order(s) — needed for the
--- order-tracking page. They may NOT modify or delete.
-create policy "orders_anon_insert" on public.orders
-  for insert to anon with check (true);
-
-create policy "orders_anon_select" on public.orders
-  for select to anon using (true);
-
--- Staff (logged-in) may do everything.
-create policy "orders_auth_all" on public.orders
-  for all to authenticated using (true) with check (true);
-
--- MENU_ITEMS --------------------------------------------------------
-alter table public.menu_items enable row level security;
-
--- Anyone can read availability / price overrides (the public menu needs it).
-create policy "menu_anon_select" on public.menu_items
-  for select to anon using (true);
-
--- Only staff can change availability / prices.
-create policy "menu_auth_all" on public.menu_items
-  for all to authenticated using (true) with check (true);
-
 -- ---------------------------------------------------------------------
--- 4) CATEGORY IMAGES — custom photo per menu category + photo storage
+-- 3) CATEGORY_IMAGES — custom photo per menu category
 -- ---------------------------------------------------------------------
 create table if not exists public.category_images (
   category   text primary key,
@@ -96,22 +54,58 @@ create table if not exists public.category_images (
   updated_at timestamptz not null default now()
 );
 
+-- ---------------------------------------------------------------------
+-- 4) FEEDBACK — customer service rating (1-5) submitted from track.html
+-- ---------------------------------------------------------------------
+create table if not exists public.feedback (
+  id         uuid primary key default gen_random_uuid(),
+  order_id   uuid,
+  rating     smallint not null check (rating between 1 and 5),
+  created_at timestamptz not null default now()
+);
+
+-- =====================================================================
+-- 5) ROW LEVEL SECURITY
+--    Wipe ANY pre-existing policies first — RLS policies combine with OR,
+--    so a leftover "allow all" policy would silently grant everything.
+-- =====================================================================
+do $$
+declare pol record;
+begin
+  for pol in select policyname, tablename from pg_policies
+             where schemaname = 'public'
+               and tablename in ('orders','menu_items','category_images','feedback') loop
+    execute format('drop policy if exists %I on public.%I', pol.policyname, pol.tablename);
+  end loop;
+end $$;
+
+alter table public.orders          enable row level security;
+alter table public.menu_items      enable row level security;
 alter table public.category_images enable row level security;
+alter table public.feedback        enable row level security;
 
-drop policy if exists "catimg_anon_select" on public.category_images;
-create policy "catimg_anon_select" on public.category_images
-  for select to anon using (true);
+-- Customers (anon): place + read orders (read needed for tracking). No update/delete.
+create policy "orders_anon_insert" on public.orders for insert to anon          with check (true);
+create policy "orders_anon_select" on public.orders for select to anon          using (true);
+create policy "orders_auth_all"    on public.orders for all    to authenticated using (true) with check (true);
 
-drop policy if exists "catimg_auth_all" on public.category_images;
-create policy "catimg_auth_all" on public.category_images
-  for all to authenticated using (true) with check (true);
+-- Menu overrides + category photos: public read, staff write.
+create policy "menu_anon_select"   on public.menu_items      for select to anon          using (true);
+create policy "menu_auth_all"      on public.menu_items      for all    to authenticated using (true) with check (true);
+create policy "catimg_anon_select" on public.category_images for select to anon          using (true);
+create policy "catimg_auth_all"    on public.category_images for all    to authenticated using (true) with check (true);
 
--- Public storage bucket for uploaded dish photos.
+-- Feedback: anon may submit (rating 1-5), only staff may read.
+create policy "feedback_anon_insert" on public.feedback for insert to anon          with check (rating between 1 and 5);
+create policy "feedback_auth_all"    on public.feedback for all    to authenticated using (true) with check (true);
+
+-- =====================================================================
+-- 6) STORAGE — public bucket for uploaded category/dish photos, staff-only writes
+-- =====================================================================
 insert into storage.buckets (id, name, public)
 values ('menu-photos', 'menu-photos', true)
 on conflict (id) do nothing;
 
--- Anyone can view photos; only staff (authenticated) can upload/replace.
 drop policy if exists "menu_photos_public_read" on storage.objects;
 create policy "menu_photos_public_read" on storage.objects
   for select to public using (bucket_id = 'menu-photos');
@@ -128,28 +122,10 @@ drop policy if exists "menu_photos_auth_delete" on storage.objects;
 create policy "menu_photos_auth_delete" on storage.objects
   for delete to authenticated using (bucket_id = 'menu-photos');
 
--- ---------------------------------------------------------------------
--- 5) FEEDBACK — customer service rating (1-5) submitted from track.html
--- ---------------------------------------------------------------------
-create table if not exists public.feedback (
-  id         uuid primary key default gen_random_uuid(),
-  order_id   uuid,
-  rating     smallint not null check (rating between 1 and 5),
-  created_at timestamptz not null default now()
-);
-
-alter table public.feedback enable row level security;
-
-drop policy if exists "feedback_anon_insert" on public.feedback;
-create policy "feedback_anon_insert" on public.feedback
-  for insert to anon with check (rating between 1 and 5);
-
-drop policy if exists "feedback_auth_all" on public.feedback;
-create policy "feedback_auth_all" on public.feedback
-  for all to authenticated using (true) with check (true);
-
 -- =====================================================================
--- ROLLBACK (only if the app breaks after enabling RLS) — run these two:
--- alter table public.orders disable row level security;
--- alter table public.menu_items disable row level security;
+-- ROLLBACK (only if the app breaks after enabling RLS) — run as needed:
+-- alter table public.orders          disable row level security;
+-- alter table public.menu_items      disable row level security;
+-- alter table public.category_images disable row level security;
+-- alter table public.feedback        disable row level security;
 -- =====================================================================
