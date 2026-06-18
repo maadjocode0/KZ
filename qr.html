@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <title>KZ | QR codes des tables</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs@gh-pages/qrcode.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Inter", sans-serif; background: #f5f2eb; color: #1a1a0e; padding: 1.5rem; }
+    .wrap { max-width: 900px; margin: 0 auto; }
+    h1 { font-family: "Cormorant Garamond", serif; color: #1a3a2a; font-size: 2rem; margin-bottom: 0.25rem; }
+    .sub { color: #6b6347; font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+    .controls {
+      display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end;
+      background: #fff; border: 1px solid #e0d8c8; border-radius: 16px;
+      padding: 1.1rem 1.25rem; margin-bottom: 1.5rem; box-shadow: 0 10px 30px rgba(26,58,42,0.08);
+    }
+    .field { display: flex; flex-direction: column; gap: 0.3rem; }
+    .field label { font-size: 0.74rem; font-weight: 600; color: #6b6347; text-transform: uppercase; letter-spacing: 0.04em; }
+    .field input {
+      border: 1px solid #e0d8c8; border-radius: 10px; padding: 0.55rem 0.8rem;
+      font-size: 0.9rem; font-family: "Inter", sans-serif; outline: none; color: #1a1a0e; background: #f5f2eb;
+    }
+    .field input:focus { border-color: #c9a84c; }
+    .field input.url { min-width: 320px; }
+    button {
+      background: #c9a84c; color: #1a3a2a; border: none; border-radius: 999px;
+      padding: 0.6rem 1.3rem; font-weight: 700; font-size: 0.88rem; cursor: pointer;
+      font-family: "Inter", sans-serif;
+    }
+    button.ghost { background: #1a3a2a; color: #fff; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
+    .qr-card {
+      background: #fff; border: 1px solid #e0d8c8; border-radius: 16px;
+      padding: 1rem; text-align: center; break-inside: avoid;
+    }
+    .qr-card h3 { font-family: "Cormorant Garamond", serif; color: #1a3a2a; font-size: 1.3rem; margin-bottom: 0.15rem; }
+    .qr-card .brand { font-size: 0.7rem; color: #c9a84c; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; margin-bottom: 0.6rem; }
+    .qr-card .scan { font-size: 0.72rem; color: #6b6347; margin-top: 0.55rem; }
+    .qr-card .qrbox { display: inline-block; }
+    .qr-card .qrbox img, .qr-card .qrbox canvas { display: block; margin: 0 auto; }
+
+    @media print {
+      body { background: #fff; padding: 0; }
+      .controls, .sub, h1, .no-print { display: none !important; }
+      .grid { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+      .qr-card { border: 1px dashed #bbb; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>QR codes des tables</h1>
+    <p class="sub">30 QR codes (tables 1 à 30). En scannant, le client ouvre le menu avec sa table déjà sélectionnée.</p>
+
+    <div class="controls no-print">
+      <div class="field">
+        <label>URL du menu (sans ?table=)</label>
+        <input type="text" id="baseUrl" class="url" />
+      </div>
+      <button onclick="generate()">Régénérer</button>
+      <button class="ghost" onclick="window.print()">🖨️ Imprimer</button>
+    </div>
+
+    <div id="grid" class="grid"></div>
+  </div>
+
+  <script>
+    function defaultBase() {
+      return new URL("index.html", window.location.href).href;
+    }
+
+    function tableUrl(base, n) {
+      const u = new URL(base);
+      u.searchParams.set("table", n);
+      return u.href;
+    }
+
+    function generate() {
+      const count = 30;
+      const base = document.getElementById("baseUrl").value.trim() || defaultBase();
+      const grid = document.getElementById("grid");
+      grid.innerHTML = "";
+
+      for (let n = 1; n <= count; n++) {
+        const url = tableUrl(base, n);
+        const card = document.createElement("div");
+        card.className = "qr-card";
+        card.innerHTML = `
+          <div class="brand">KZ Café Lounge</div>
+          <h3>Table ${n}</h3>
+          <div class="qrbox" id="qr-${n}"></div>
+          <div class="scan">Scannez pour commander</div>`;
+        grid.appendChild(card);
+        new QRCode(document.getElementById(`qr-${n}`), {
+          text: url, width: 150, height: 150,
+          colorDark: "#1a3a2a", colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      }
+    }
+
+    document.getElementById("baseUrl").value = defaultBase();
+    generate();
+  </script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+
+
+.range-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+.report-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.report-panel {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 16px;
+  padding: 1.1rem 1.25rem;
+}
+
+.report-panel h2 {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.2rem;
+  color: #c9a84c;
+  margin-bottom: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.report-panel h2 i { font-size: 0.9rem; }
+
+.report-empty { color: #6e7681; font-size: 0.85rem; padding: 0.5rem 0; }
+
+
+.report-table { width: 100%; border-collapse: collapse; }
+.report-table th {
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6e7681;
+  padding: 0.35rem 0.4rem;
+  border-bottom: 1px solid #30363d;
+}
+.report-table th:not(:first-child) { text-align: right; }
+.report-table td {
+  font-size: 0.86rem;
+  color: #c9d1d9;
+  padding: 0.45rem 0.4rem;
+  border-bottom: 1px solid #21262d;
+}
+.report-table tr:last-child td { border-bottom: none; }
+.report-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.report-table td.accent { color: #c9a84c; font-weight: 600; }
+
+
+.bar-row {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr auto;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.55rem;
+}
+.bar-label { font-size: 0.78rem; color: #c9d1d9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-track { background: #21262d; border-radius: 999px; height: 10px; overflow: hidden; }
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #1c1c1c, #c9a84c);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+.bar-value { font-size: 0.78rem; color: #c9a84c; font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+.fb-score { display: flex; align-items: baseline; gap: 0.4rem; margin-bottom: 0.9rem; }
+.fb-avg { font-size: 2rem; font-weight: 700; color: #c9a84c; line-height: 1; }
+.fb-out { font-size: 0.9rem; color: #6e7681; }
+.fb-count { margin-left: auto; font-size: 0.78rem; color: #8b949e; align-self: center; }
+
+@media (max-width: 600px) {
+  .report-grid { grid-template-columns: 1fr; }
+  .range-tabs .filter-tab { padding: 0.45rem 0.8rem; font-size: 0.78rem; }
+}

@@ -1,0 +1,16 @@
+# Local Claude Code / editor settings and dev-preview config
+.claude/
+
+# Source material & PDF-render / image-helper artifacts (not part of the deployed site)
+menu.pdf
+page-*.png
+*.ps1
+out.txt
+
+# Node / tooling
+node_modules/
+*.log
+
+# OS junk
+Thumbs.db
+.DS_Store

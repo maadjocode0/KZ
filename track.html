@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1c1c1c" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <title>KZ Café Lounge | Suivi de commande</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="track.css" />
+</head>
+<body>
+
+  <header class="hero hero-small">
+    <div class="hero-card">
+      <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Menu</a>
+      <h1>Suivi de commande</h1>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="section">
+      <div id="trackRoot">
+        <p class="track-loading"><i class="fa-solid fa-spinner fa-spin"></i> Chargement…</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="supabase.js"></script>
+  <script src="track-script.js"></script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0d1117" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <title>KZ | Gestion du menu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="pos.css" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body class="pos-body">
+  <div class="pos-shell">
+
+    <div class="pos-topbar">
+      <div class="pos-brand">
+        <strong>KZ Café Lounge</strong>
+        <span>Gestion du menu</span>
+      </div>
+      <div class="pos-right">
+        <a class="pos-link" href="pos.html"><i class="fa-solid fa-table-columns"></i> POS</a>
+        <a class="pos-link" href="qr.html"><i class="fa-solid fa-qrcode"></i> QR tables</a>
+        <button class="pos-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+      </div>
+    </div>
+
+    <div class="admin-toolbar">
+      <div class="admin-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="adminSearch" placeholder="Rechercher un article…" />
+      </div>
+      <span id="saveStatus" class="save-status"></span>
+    </div>
+
+    <div id="adminList" class="admin-list">
+      <p class="empty-pos">Chargement…</p>
+    </div>
+
+  </div>
+
+  <script src="menu-data.js"></script>
+  <script src="supabase.js"></script>
+  <script src="admin-script.js"></script>
+</body>
+</html>

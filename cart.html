@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1c1c1c" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <title>KZ Café Lounge | Panier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="cart.css" />
+</head>
+<body>
+
+  <header class="hero hero-small">
+    <div class="hero-card">
+      <a href="index.html" class="back-link">
+        <i class="fa-solid fa-arrow-left"></i> Menu
+      </a>
+      <h1>Mon Panier</h1>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="section">
+      <div id="cartContainer">
+        <div id="cartItems"></div>
+        <div id="cartSummary" style="display:none">
+          <div class="summary-card">
+            <div class="summary-row">
+              <span>Total</span>
+              <strong id="cartTotal">0.00 DT</strong>
+            </div>
+          </div>
+
+          <div class="table-section">
+            <h3>Votre table</h3>
+            <p class="table-hint">Scannez le QR code posé sur votre table pour la confirmer.</p>
+            <div id="tableDisplay" class="table-display" style="display:none">
+              Table <strong id="tableNumber"></strong> <span id="tableVerifiedTag"></span>
+            </div>
+            <button type="button" class="btn-scan" onclick="startScan()">
+              <i class="fa-solid fa-camera"></i> Scanner le QR de ma table
+            </button>
+            <details class="manual-table">
+              <summary>Saisir le numéro manuellement</summary>
+              <div class="table-input-row">
+                <input type="number" id="tableInput" placeholder="Ex: 5" min="1" max="50" />
+                <button class="btn-confirm-table" onclick="setTableManually()">Confirmer</button>
+              </div>
+            </details>
+          </div>
+
+          <div class="note-section">
+            <h3>Note pour la cuisine <span>(optionnel)</span></h3>
+            <textarea id="orderNote" maxlength="200" rows="2"
+              placeholder="Ex : sans oignon, bien cuit, allergie aux fruits secs…"></textarea>
+          </div>
+
+          <button class="btn-order" id="orderBtn" onclick="submitOrder()" disabled>
+            <i class="fa-solid fa-check"></i>
+            Confirmer la commande
+          </button>
+
+          <div id="orderSuccess" class="order-success" style="display:none">
+            <i class="fa-solid fa-circle-check"></i>
+            <h2>Commande envoyée !</h2>
+            <p>Votre commande a été transmise au personnel.</p>
+            <div class="success-actions">
+              <a id="trackLink" href="#" class="btn-track"><i class="fa-solid fa-location-arrow"></i> Suivre ma commande</a>
+              <a href="index.html" class="btn-back-menu">Retour au menu</a>
+            </div>
+          </div>
+        </div>
+
+        <div id="cartEmpty" class="cart-empty">
+          <i class="fa-solid fa-basket-shopping"></i>
+          <p>Votre panier est vide.</p>
+          <a href="index.html" class="btn-back-menu">Voir le menu</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="scanOverlay" class="scan-overlay" style="display:none">
+    <div class="scan-header">
+      <span>Visez le QR de votre table</span>
+      <button class="scan-close" onclick="stopScan()" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="scan-video-wrap">
+      <video id="scanVideo" playsinline muted autoplay></video>
+      <div class="scan-frame"></div>
+    </div>
+    <p id="scanStatus" class="scan-status"></p>
+    <canvas id="scanCanvas" hidden></canvas>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+  <script src="supabase.js"></script>
+  <script src="cart-script.js"></script>
+</body>
+</html>

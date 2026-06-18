@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0d1117" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <title>KZ | Staff Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Inter", sans-serif; background: #0d1117; display: grid;
+           place-items: center; min-height: 100vh; }
+    .login-card { background: #161b22; border: 1px solid #30363d; border-radius: 16px;
+                  padding: 2rem; width: min(360px, 90vw); }
+    h1 { font-size: 1.3rem; color: #c9a84c; margin-bottom: 0.4rem; }
+    p { font-size: 0.82rem; color: #8b949e; margin-bottom: 1.5rem; }
+    label { font-size: 0.8rem; color: #8b949e; display: block; margin-bottom: 0.3rem; }
+    input { width: 100%; background: #0d1117; border: 1px solid #30363d; border-radius: 8px;
+            padding: 0.65rem 1rem; color: #f0f0f0; font-size: 0.9rem;
+            font-family: "Inter", sans-serif; margin-bottom: 1rem; outline: none; }
+    input:focus { border-color: #c9a84c; }
+    button { width: 100%; background: #c9a84c; color: #1a3a2a; border: none;
+             border-radius: 999px; padding: 0.75rem; font-weight: 700;
+             font-size: 0.9rem; cursor: pointer; }
+    .error { color: #f85149; font-size: 0.82rem; margin-bottom: 1rem; display: none; }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <h1>KZ Café Lounge</h1>
+    <p>Accès staff uniquement</p>
+    <p class="error" id="errorMsg">Email ou mot de passe incorrect.</p>
+    <label>Email</label>
+    <input type="email" id="email" placeholder="staff@kz.tn" />
+    <label>Mot de passe</label>
+    <input type="password" id="password" />
+    <button onclick="login()">Se connecter</button>
+  </div>
+
+  <script src="supabase.js"></script>
+  <script>
+    async function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      try {
+        const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "apikey": SUPABASE_KEY },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error_description);
+        sessionStorage.setItem("kz_token", data.access_token);
+        window.location.href = "pos.html";
+      } catch (err) {
+        document.getElementById("errorMsg").style.display = "block";
+      }
+    }
+  </script>
+</body>
+</html>
