@@ -1,6 +1,8 @@
 let ALL_ORDERS = [];
 let ALL_FEEDBACK = [];
 let currentRange = "today";
+let catChartRef = null;
+let dayChartRef = null;
 
 async function ensureAuth() {
   const token = sessionStorage.getItem("kz_token");
@@ -109,12 +111,20 @@ function render() {
   const cats = [...catMap.entries()]
     .map(([name, rev]) => ({ name, rev }))
     .sort((a, b) => b.rev - a.rev);
-  const catMax = cats.length ? cats[0].rev : 0;
+  // Group into the top 8 categories + "Autres" so the doughnut stays readable.
+  const catTop = cats.slice(0, 8);
+  const catRest = cats.slice(8).reduce((s, c) => s + c.rev, 0);
+  const catsForChart = catRest > 0 ? [...catTop, { name: "Autres", rev: catRest }] : catTop;
 
-  const dayMap = new Map();
-  done.forEach(o => { const k = dayKey(o.created_at); dayMap.set(k, (dayMap.get(k) || 0) + Number(o.total)); });
-  const days = [...dayMap.entries()].map(([k, rev]) => ({ k, rev }));
-  const dayMax = days.reduce((m, d) => Math.max(m, d.rev), 0);
+  const dayMap = new Map(); // sortKey (yyyy-mm-dd) -> { label, rev }
+  done.forEach(o => {
+    const d = new Date(o.created_at);
+    const sortKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    const cur = dayMap.get(sortKey) || { label: dayKey(o.created_at), rev: 0 };
+    cur.rev += Number(o.total);
+    dayMap.set(sortKey, cur);
+  });
+  const days = [...dayMap.entries()].sort((a, b) => (a[0] < b[0] ? -1 : 1)).map(([, v]) => ({ k: v.label, rev: v.rev }));
 
   const root = document.getElementById("reportRoot");
   root.innerHTML = `
@@ -156,26 +166,77 @@ function render() {
 
       <section class="report-panel">
         <h2><i class="fa-solid fa-layer-group"></i> CA par catégorie</h2>
-        ${cats.length ? cats.map(c => `
-          <div class="bar-row">
-            <span class="bar-label">${escapeHtml(c.name)}</span>
-            ${bar(c.rev, catMax)}
-            <span class="bar-value">${formatPrice(c.rev)}</span>
-          </div>`).join("") : `<p class="report-empty">Aucune vente sur la période.</p>`}
+        ${catsForChart.length ? `<div class="chart-box"><canvas id="catChart"></canvas></div>` : `<p class="report-empty">Aucune vente sur la période.</p>`}
       </section>
 
-      <section class="report-panel">
+      <section class="report-panel report-panel-wide">
         <h2><i class="fa-solid fa-calendar-day"></i> CA par jour</h2>
-        ${days.length ? days.map(d => `
-          <div class="bar-row">
-            <span class="bar-label">${d.k}</span>
-            ${bar(d.rev, dayMax)}
-            <span class="bar-value">${formatPrice(d.rev)}</span>
-          </div>`).join("") : `<p class="report-empty">Aucune vente sur la période.</p>`}
+        ${days.length ? `<div class="chart-box"><canvas id="dayChart"></canvas></div>` : `<p class="report-empty">Aucune vente sur la période.</p>`}
       </section>
 
       ${feedbackPanelHTML()}
     </div>`;
+
+  buildCharts(catsForChart, days);
+}
+
+function buildCharts(cats, days) {
+  if (catChartRef) { catChartRef.destroy(); catChartRef = null; }
+  if (dayChartRef) { dayChartRef.destroy(); dayChartRef = null; }
+  if (typeof Chart === "undefined") return;
+
+  const gold = "#c9a84c";
+  Chart.defaults.color = "#c9d1d9";
+  Chart.defaults.font.family = "Inter, sans-serif";
+
+  const catCanvas = document.getElementById("catChart");
+  if (catCanvas && cats.length) {
+    const palette = ["#c9a84c", "#e0c074", "#b9933f", "#a9842f", "#d4b86a", "#8a6d2a", "#e6cf95", "#7d6b3f", "#5c5230"];
+    catChartRef = new Chart(catCanvas, {
+      type: "doughnut",
+      data: {
+        labels: cats.map(c => c.name),
+        datasets: [{
+          data: cats.map(c => c.rev),
+          backgroundColor: cats.map((_, i) => palette[i % palette.length]),
+          borderColor: "#161b22",
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: "60%",
+        plugins: {
+          legend: { position: "right", labels: { boxWidth: 12, padding: 9, font: { size: 11 } } },
+          tooltip: { callbacks: { label: (c) => ` ${c.label}: ${formatPrice(c.parsed)}` } }
+        }
+      }
+    });
+  }
+
+  const dayCanvas = document.getElementById("dayChart");
+  if (dayCanvas && days.length) {
+    dayChartRef = new Chart(dayCanvas, {
+      type: "bar",
+      data: {
+        labels: days.map(d => d.k),
+        datasets: [{ data: days.map(d => d.rev), backgroundColor: gold, borderRadius: 6, maxBarThickness: 46 }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: (c) => ` ${formatPrice(c.parsed.y)}` } }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+          y: { beginAtZero: true, grid: { color: "rgba(255,255,255,0.06)" }, ticks: { font: { size: 11 } } }
+        }
+      }
+    });
+  }
 }
 
 document.addEventListener("DOMContentLoaded", async () => {

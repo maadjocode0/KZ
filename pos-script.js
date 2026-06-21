@@ -119,13 +119,14 @@ function getStatusLabel(status) {
 }
 
 function getActions(order) {
+  const edit = `<button class="btn-edit" onclick="openEdit('${order.id}')"><i class="fa-solid fa-pen-to-square"></i> Modifier</button>`;
   if (order.status === "pending") {
-    return `
+    return `${edit}
       <button class="btn-cancel" onclick="markCancelled('${order.id}')"><i class="fa-solid fa-xmark"></i> Annuler</button>
       <button class="btn-start" onclick="markPreparing('${order.id}')"><i class="fa-solid fa-fire-burner"></i> Commencer</button>`;
   }
   if (order.status === "preparing") {
-    return `
+    return `${edit}
       <button class="btn-cancel" onclick="markCancelled('${order.id}')"><i class="fa-solid fa-xmark"></i> Annuler</button>
       <button class="btn-done" onclick="markDone('${order.id}')"><i class="fa-solid fa-check"></i> Terminé</button>`;
   }
@@ -200,6 +201,102 @@ const markCancelled = (id) => setStatus(id, "cancelled", "Annuler cette commande
 
 
 
+// ===== Edit an order (modify quantities / remove / add items) =====
+let editingId = null;
+let editItems = [];
+
+function populateMenuDatalist() {
+  const dl = document.getElementById("menuItemsList");
+  if (!dl || typeof flatMenuItems !== "function") return;
+  dl.innerHTML = flatMenuItems()
+    .map(m => `<option value="${escapeHtml(m.name)}">${formatPrice(m.price)}</option>`)
+    .join("");
+}
+
+function editTotal() {
+  return editItems.reduce((sum, it) => sum + Number(it.price) * it.qty, 0);
+}
+
+function renderEditLines() {
+  const wrap = document.getElementById("editLines");
+  if (!wrap) return;
+  if (!editItems.length) {
+    wrap.innerHTML = `<p class="edit-empty">Aucun article — ajoutez-en un ci-dessous.</p>`;
+  } else {
+    wrap.innerHTML = editItems.map((it, i) => `
+      <div class="edit-line">
+        <div class="edit-line-info">
+          <span class="edit-line-name">${escapeHtml(it.name)}</span>
+          <span class="edit-line-price">${formatPrice(it.price)} × ${it.qty} = ${formatPrice(it.price * it.qty)}</span>
+        </div>
+        <div class="edit-qty">
+          <button onclick="changeEditQty(${i}, -1)" aria-label="Moins">−</button>
+          <span>${it.qty}</span>
+          <button onclick="changeEditQty(${i}, 1)" aria-label="Plus">+</button>
+        </div>
+        <button class="edit-remove" onclick="removeEditLine(${i})" aria-label="Supprimer"><i class="fa-solid fa-trash"></i></button>
+      </div>`).join("");
+  }
+  const t = document.getElementById("editTotal");
+  if (t) t.textContent = formatPrice(editTotal());
+}
+
+function openEdit(id) {
+  const order = allOrders.find(o => o.id === id);
+  if (!order) return;
+  editingId = id;
+  editItems = (order.items || []).map(it => ({ name: it.name, price: Number(it.price), qty: it.qty }));
+  const num = document.getElementById("editTableNum");
+  if (num) num.textContent = order.table_number;
+  renderEditLines();
+  document.getElementById("editOverlay").hidden = false;
+}
+
+function closeEdit() {
+  editingId = null;
+  editItems = [];
+  const ov = document.getElementById("editOverlay");
+  if (ov) ov.hidden = true;
+}
+
+function changeEditQty(i, delta) {
+  if (!editItems[i]) return;
+  editItems[i].qty += delta;
+  if (editItems[i].qty <= 0) editItems.splice(i, 1);
+  renderEditLines();
+}
+
+function removeEditLine(i) {
+  editItems.splice(i, 1);
+  renderEditLines();
+}
+
+function addEditItem() {
+  const input = document.getElementById("addItemInput");
+  const name = input.value.trim();
+  if (!name) return;
+  const all = (typeof flatMenuItems === "function") ? flatMenuItems() : [];
+  const match = all.find(m => m.name.toLowerCase() === name.toLowerCase());
+  if (!match) { alert("Article introuvable — choisissez-en un dans la liste."); return; }
+  const existing = editItems.find(it => it.name === match.name);
+  if (existing) existing.qty += 1;
+  else editItems.push({ name: match.name, price: Number(match.price), qty: 1 });
+  input.value = "";
+  renderEditLines();
+}
+
+async function saveEdit() {
+  if (!editingId) return;
+  if (!editItems.length) { alert("La commande doit contenir au moins un article (sinon, annulez-la)."); return; }
+  try {
+    await updateOrderItems(editingId, editItems, editTotal());
+    closeEdit();
+    await fetchAndRender();
+  } catch (err) { console.error(err); alert("Enregistrement impossible. Réessayez."); }
+}
+
+
+
 async function fetchAndRender() {
   try {
     allOrders = await getOrders();
@@ -260,6 +357,7 @@ function requestNotifications() {
 document.addEventListener("DOMContentLoaded", async () => {
   if (!(await ensureAuth())) return;
   requestNotifications();
+  populateMenuDatalist();
   startClock();
   fetchAndRender();
   setInterval(fetchAndRender, 5000);

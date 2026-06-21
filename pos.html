@@ -84,6 +84,30 @@
 
   </div>
 
+  <!-- Edit-order modal -->
+  <div class="edit-overlay" id="editOverlay" hidden>
+    <div class="edit-modal">
+      <div class="edit-head">
+        <h3><i class="fa-solid fa-pen-to-square"></i> Modifier — Table <span id="editTableNum"></span></h3>
+        <button class="edit-close" onclick="closeEdit()" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="edit-lines" id="editLines"></div>
+      <div class="edit-add">
+        <input list="menuItemsList" id="addItemInput" placeholder="Ajouter un article…" autocomplete="off" />
+        <datalist id="menuItemsList"></datalist>
+        <button class="edit-add-btn" onclick="addEditItem()" aria-label="Ajouter"><i class="fa-solid fa-plus"></i></button>
+      </div>
+      <div class="edit-foot">
+        <span class="edit-total-label">Total <strong id="editTotal">0.00 DT</strong></span>
+        <div class="edit-foot-actions">
+          <button class="btn-cancel" onclick="closeEdit()">Annuler</button>
+          <button class="btn-done" onclick="saveEdit()"><i class="fa-solid fa-floppy-disk"></i> Enregistrer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="menu-data.js"></script>
   <script src="supabase.js"></script>
   <script src="pos-script.js"></script>
 </body>

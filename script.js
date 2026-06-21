@@ -132,6 +132,20 @@ function renderNavbar() {
     const id = slugify(block.category);
     return `<a class="nav-pill" href="#${id}">${block.category}</a>`;
   }).join("");
+
+  // Tapping a category pill opens that category (it's collapsed by default).
+  nav.querySelectorAll(".nav-pill").forEach((pill) => {
+    pill.addEventListener("click", () => {
+      const id = pill.getAttribute("href").slice(1);
+      const items = document.getElementById(`${id}-items`);
+      const cat = document.getElementById(id);
+      if (items && cat && items.classList.contains("collapsed")) {
+        items.classList.remove("collapsed");
+        cat.querySelector(".toggle-arrow")?.classList.add("open");
+        cat.querySelector(".category-toggle")?.setAttribute("aria-expanded", "true");
+      }
+    });
+  });
 }
 
 function lineHTML(displayLabel, lineName, codedPrice) {
@@ -173,15 +187,18 @@ function renderMenu() {
 
     return `
       <article class="menu-category" id="${id}">
-        <button class="category-toggle" data-target="${id}-items" aria-expanded="true">
+        <button class="category-toggle" data-target="${id}-items" aria-expanded="false">
           <img class="category-bg" src="${imgSrc}" alt="${block.category}" loading="lazy" />
           <div class="category-overlay"></div>
           <div class="category-toggle-inner">
             <h3>${block.category}</h3>
-            <span class="toggle-arrow open">▼</span>
+            <div class="toggle-meta">
+              <span class="category-count">${block.items.length} ${block.items.length > 1 ? 'articles' : 'article'}</span>
+              <span class="toggle-arrow">▼</span>
+            </div>
           </div>
         </button>
-        <div class="category-items" id="${id}-items">
+        <div class="category-items collapsed" id="${id}-items">
           <div class="menu-list">
             ${block.items.map((item) => `
               <div class="menu-item">

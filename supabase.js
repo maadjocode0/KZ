@@ -61,6 +61,10 @@ async function updateOrderStatus(id, status) {
   return supabaseRequest("PATCH", `/orders?id=eq.${id}`, { status });
 }
 
+async function updateOrderItems(id, items, total) {
+  return supabaseRequest("PATCH", `/orders?id=eq.${id}`, { items, total });
+}
+
 async function getMenuItems() {
   return supabaseRequest("GET", "/menu_items?select=*");
 }

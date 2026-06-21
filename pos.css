@@ -320,6 +320,173 @@ body.pos-body {
 
 .btn-cancel:hover { background: #f8514922; color: #f85149; border-color: #f85149; }
 
+.btn-edit {
+  background: transparent;
+  color: #c9a84c;
+  border: 1px solid #c9a84c55;
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: "Inter", sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: background 0.2s, color 0.2s;
+}
+.btn-edit:hover { background: #c9a84c; color: #1c1c1c; }
+
+/* ===== Edit-order modal ===== */
+.edit-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.edit-overlay[hidden] { display: none; }
+
+.edit-modal {
+  width: min(460px, 100%);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  animation: slideIn 0.2s ease;
+}
+
+.edit-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #30363d;
+}
+.edit-head h3 {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.3rem;
+  color: #fff;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.edit-head h3 i { color: #c9a84c; font-size: 0.9rem; }
+.edit-close {
+  background: none;
+  border: none;
+  color: #8b949e;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+}
+.edit-close:hover { color: #f85149; }
+
+.edit-lines {
+  padding: 0.75rem 1.25rem;
+  overflow-y: auto;
+  flex: 1;
+}
+.edit-empty { color: #6e7681; font-size: 0.85rem; text-align: center; padding: 1rem 0; }
+
+.edit-line {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid #21262d;
+}
+.edit-line:last-child { border-bottom: none; }
+.edit-line-info { flex: 1; min-width: 0; }
+.edit-line-name { display: block; color: #c9d1d9; font-size: 0.9rem; font-weight: 600; }
+.edit-line-price { display: block; color: #8b949e; font-size: 0.75rem; font-variant-numeric: tabular-nums; }
+
+.edit-qty {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 999px;
+  padding: 0.2rem;
+}
+.edit-qty button {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: #21262d;
+  color: #c9a84c;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  line-height: 1;
+}
+.edit-qty button:hover { background: #c9a84c; color: #1c1c1c; }
+.edit-qty span { min-width: 1.2rem; text-align: center; color: #fff; font-weight: 600; font-size: 0.9rem; }
+
+.edit-remove {
+  background: none;
+  border: none;
+  color: #6e7681;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0.4rem;
+}
+.edit-remove:hover { color: #f85149; }
+
+.edit-add {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.85rem 1.25rem;
+  border-top: 1px solid #30363d;
+}
+.edit-add input {
+  flex: 1;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  color: #fff;
+  font-size: 0.85rem;
+  font-family: "Inter", sans-serif;
+  outline: none;
+}
+.edit-add input:focus { border-color: #c9a84c; }
+.edit-add-btn {
+  width: 40px;
+  border-radius: 50%;
+  border: none;
+  background: #c9a84c;
+  color: #1c1c1c;
+  font-size: 1rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.edit-add-btn:hover { filter: brightness(1.08); }
+
+.edit-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid #30363d;
+  flex-wrap: wrap;
+}
+.edit-total-label { color: #8b949e; font-size: 0.85rem; }
+.edit-total-label strong { color: #c9a84c; font-size: 1.15rem; margin-left: 0.35rem; font-variant-numeric: tabular-nums; }
+.edit-foot-actions { display: flex; gap: 0.5rem; }
+
 
 @media (max-width: 600px) {
   .pos-shell { padding: 0.75rem; gap: 0.6rem; }

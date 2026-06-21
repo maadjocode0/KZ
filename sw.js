@@ -1,5 +1,5 @@
 
-const CACHE = "kz-v2";
+const CACHE = "kz-v3";
 const ASSETS = [
   "index.html", "cart.html", "track.html",
   "menu-data.js", "script.js", "supabase.js", "cart-script.js", "track-script.js",

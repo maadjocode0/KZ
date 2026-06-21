@@ -229,6 +229,30 @@ h1, h2, h3, h4, p { margin: 0; }
 
 .toggle-arrow.open { transform: rotate(180deg); }
 
+.toggle-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.category-count {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--accent);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(201, 168, 76, 0.5);
+  padding: 0.12rem 0.55rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  backdrop-filter: blur(2px);
+}
+
+/* Closed categories sit flush as a clean accordion list */
+.menu-category:has(.category-items.collapsed) { margin-bottom: 0.6rem; }
+.category-toggle { transition: filter 0.2s ease; }
+.category-toggle:hover { filter: brightness(1.08); }
+
 .category-items {
   overflow: hidden;
   max-height: 3000px;
