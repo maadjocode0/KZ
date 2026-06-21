@@ -70,6 +70,40 @@ function syncStickyOffsets() {
   if (catnav) root.style.setProperty("--catnav-h", catnav.offsetHeight + "px");
 }
 
+// Collapsible header search: an icon that expands into a field on click.
+function setupHeaderSearch() {
+  const box = document.querySelector(".header-search");
+  const toggle = document.getElementById("searchToggle");
+  const input = document.getElementById("searchInput");
+  const header = document.querySelector(".site-header");
+  if (!box || !toggle || !input) return;
+
+  const openSearch = () => {
+    box.classList.add("open");
+    header && header.classList.add("search-open");
+    setTimeout(() => input.focus(), 60);
+  };
+  const closeSearch = () => {
+    box.classList.remove("open");
+    header && header.classList.remove("search-open");
+    if (input.value) { input.value = ""; input.dispatchEvent(new Event("input")); }
+    input.blur();
+  };
+
+  toggle.addEventListener("click", (e) => {
+    e.stopPropagation();
+    box.classList.contains("open") ? closeSearch() : openSearch();
+  });
+  input.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSearch(); });
+  // Click outside the search (and outside the menu, so adding items doesn't close it) collapses it.
+  document.addEventListener("click", (e) => {
+    if (!box.classList.contains("open")) return;
+    const menu = document.getElementById("menuContainer");
+    if (box.contains(e.target) || (menu && menu.contains(e.target))) return;
+    closeSearch();
+  });
+}
+
 // Show the full hero on load; slide the compact header in once it's scrolled past.
 function setupCollapsingHeader() {
   const hero = document.querySelector(".hero");
@@ -372,6 +406,7 @@ async function init() {
   renderMenu();
   setupScrollSpy();
   setupSearch();
+  setupHeaderSearch();
   syncStickyOffsets();
   setupCollapsingHeader();
 }

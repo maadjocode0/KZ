@@ -30,14 +30,16 @@
       <img class="brand-logo" src="logo-kz.png" alt="KZ Café Lounge" width="40" height="48" />
       <span class="brand-name">KZ Café Lounge</span>
     </a>
-    <div class="header-search">
-      <i class="fa-solid fa-magnifying-glass"></i>
-      <input type="text" id="searchInput" placeholder="Rechercher un article..." />
-    </div>
     <nav class="header-links">
       <a class="header-link" href="#menu"><i class="fa-solid fa-utensils"></i><span>Voir le menu</span></a>
       <a class="header-link" href="#nous-trouver"><i class="fa-solid fa-location-dot"></i><span>Nous trouver</span></a>
     </nav>
+    <div class="header-search" id="headerSearch">
+      <button class="search-toggle" id="searchToggle" type="button" aria-label="Rechercher">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </button>
+      <input type="text" id="searchInput" placeholder="Rechercher un article..." aria-label="Rechercher un article" />
+    </div>
     <a class="header-cart" id="headerCart" href="cart.html" aria-label="Voir mon panier">
       <i class="fa-solid fa-basket-shopping"></i>
       <span class="cart-badge hidden" id="cartBadge">0</span>
