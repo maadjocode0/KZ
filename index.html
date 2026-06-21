@@ -16,13 +16,19 @@
 </head>
 <body>
 
-  <header class="hero">
-    <div class="hero-card">
-      <img class="hero-emblem" src="logo-kz.png" alt="KZ Café Lounge" width="104" height="126" />
-      <p class="eyebrow">Bardo · Tunis</p>
-      <h1>KZ Café Lounge</h1>
-      <p class="hero-text">Café · Lounge · Restaurant</p>
-    </div>
+  <header class="site-header" id="siteHeader">
+    <a class="brand" href="#" onclick="event.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' });">
+      <img class="brand-logo" src="logo-kz.png" alt="KZ Café Lounge" width="40" height="48" />
+      <span class="brand-name">KZ Café Lounge</span>
+    </a>
+    <nav class="header-links">
+      <a class="header-link" href="#menu"><i class="fa-solid fa-utensils"></i><span>Voir le menu</span></a>
+      <a class="header-link" href="#nous-trouver"><i class="fa-solid fa-location-dot"></i><span>Nous trouver</span></a>
+    </nav>
+    <a class="header-cart" id="headerCart" href="cart.html" aria-label="Voir mon panier">
+      <i class="fa-solid fa-basket-shopping"></i>
+      <span class="cart-badge hidden" id="cartBadge">0</span>
+    </a>
   </header>
 
   <nav class="category-nav">
@@ -34,10 +40,6 @@
     <input type="text" id="searchInput" placeholder="Rechercher un article..." />
   </div>
 </div>
-<div class="floating-cart" id="floatingCart" onclick="window.location.href='cart.html'" style="display:none">
-  <i class="fa-solid fa-basket-shopping"></i>
-  <span id="cartBadge">0</span>
-</div>
 <a class="floating-track" id="floatingTrack" href="track.html" style="display:none">
   <i class="fa-solid fa-location-arrow"></i>
   <span>Suivre ma commande</span>
@@ -47,7 +49,7 @@
       <div id="menuContainer"></div>
     </section>
 
-    <section class="section">
+    <section class="section" id="nous-trouver">
       <div class="section-head">
         <h2>Nous trouver</h2>
       </div>
@@ -59,27 +61,40 @@
           referrerpolicy="no-referrer-when-downgrade"></iframe>
       </div>
     </section>
+  </main>
 
-    <section class="section">
-      <div class="section-head">
-        <h2>Contact</h2>
-      </div>
-      <div class="info-card">
-        <p><strong>Téléphone :</strong> <a href="tel:+21658890656">+216 58 890 656</a></p>
-        <p><strong>Horaires :</strong> Tous les jours, 08:00 – 00:00</p>
-        <div class="social-links">
-          <a href="https://www.instagram.com/kzed_cafelounge/" class="social-btn instagram-btn" target="_blank" rel="noopener">
-            <i class="fa-brands fa-instagram"></i>
-            Instagram
-          </a>
-          <a href="https://www.facebook.com/profile.php?id=61559121256736" class="social-btn facebook-btn" target="_blank" rel="noopener">
-            <i class="fa-brands fa-facebook"></i>
-            Facebook
-          </a>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="logo-kz.png" alt="KZ Café Lounge" width="52" height="63" />
+        <div>
+          <strong>KZ Café Lounge</strong>
+          <p>Café · Lounge · Restaurant</p>
         </div>
       </div>
-    </section>
-  </main>
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <a href="#menu">Voir le menu</a>
+        <a href="#nous-trouver">Nous trouver</a>
+        <a href="cart.html">Mon panier</a>
+        <a href="track.html">Suivre ma commande</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a href="tel:+21658890656"><i class="fa-solid fa-phone"></i> +216 58 890 656</a>
+        <span><i class="fa-solid fa-location-dot"></i> Bardo, Tunis</span>
+        <span><i class="fa-regular fa-clock"></i> Tous les jours · 08:00 – 00:00</span>
+        <div class="footer-social">
+          <a href="https://www.instagram.com/kzed_cafelounge/" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://www.facebook.com/profile.php?id=61559121256736" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 KZ Café Lounge — Tous droits réservés</span>
+      <span>Réalisé par Youssef Maâzaoui</span>
+    </div>
+  </footer>
 
   <script src="menu-data.js"></script>
   <script src="supabase.js"></script>

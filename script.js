@@ -46,9 +46,28 @@ function updateCartBadge() {
   const cart = getCart();
   const total = cart.reduce((sum, i) => sum + i.qty, 0);
   const badge = document.getElementById("cartBadge");
-  const floatingCart = document.getElementById("floatingCart");
-  if (badge) badge.textContent = total;
-  if (floatingCart) floatingCart.style.display = total > 0 ? "flex" : "none";
+  if (badge) {
+    badge.textContent = total;
+    badge.classList.toggle("hidden", total === 0);
+  }
+}
+
+// Bounce the header cart + pop the badge when an item is added.
+function bumpCart() {
+  const cart = document.getElementById("headerCart");
+  const badge = document.getElementById("cartBadge");
+  if (cart) { cart.classList.remove("bump"); void cart.offsetWidth; cart.classList.add("bump"); }
+  if (badge) { badge.classList.remove("pop"); void badge.offsetWidth; badge.classList.add("pop"); }
+}
+
+// Keep the sticky category-nav and search bar parked right under the header,
+// whatever the header's actual height is (it wraps to two rows on mobile).
+function syncStickyOffsets() {
+  const header = document.querySelector(".site-header");
+  const catnav = document.querySelector(".category-nav");
+  const root = document.documentElement;
+  if (header) root.style.setProperty("--header-h", header.offsetHeight + "px");
+  if (catnav) root.style.setProperty("--catnav-h", catnav.offsetHeight + "px");
 }
 
 function escName(name) {
@@ -83,6 +102,7 @@ function addToCart(name, price) {
   }
   setCart(cart);
   updateCartBadge();
+  bumpCart();
 
   const control = document.querySelector(`.btn-add[data-name="${CSS.escape(name)}"], .item-qty-control[data-name="${CSS.escape(name)}"]`);
   if (control) control.outerHTML = addControlHTML(name, price, cartQty(name));
@@ -99,6 +119,7 @@ function changeQtyInMenu(name, price, delta) {
   if (existing.qty <= 0) cart.splice(cart.indexOf(existing), 1);
   setCart(cart);
   updateCartBadge();
+  if (delta > 0) bumpCart();
 
   const control = document.querySelector(`.item-qty-control[data-name="${CSS.escape(name)}"], .btn-add[data-name="${CSS.escape(name)}"]`);
   if (control) control.outerHTML = addControlHTML(name, price, cartQty(name));
@@ -331,6 +352,9 @@ async function init() {
   renderMenu();
   setupScrollSpy();
   setupSearch();
+  syncStickyOffsets();
 }
 
 document.addEventListener("DOMContentLoaded", init);
+window.addEventListener("load", syncStickyOffsets);
+window.addEventListener("resize", syncStickyOffsets);
