@@ -1,5 +1,5 @@
 
-const CACHE = "kz-v8";
+const CACHE = "kz-v9";
 const ASSETS = [
   "index.html", "cart.html", "track.html",
   "menu-data.js", "script.js", "supabase.js", "cart-script.js", "track-script.js",
@@ -21,6 +21,9 @@ self.addEventListener("activate", (e) => {
   );
 });
 
+// Network-first: always prefer fresh files when online (ordering needs the
+// network anyway), and fall back to cache only when offline. This guarantees a
+// returning visitor never runs stale app code.
 self.addEventListener("fetch", (e) => {
   const req = e.request;
   if (req.method !== "GET") return;
@@ -28,15 +31,14 @@ self.addEventListener("fetch", (e) => {
   if (url.origin !== location.origin) return;
 
   e.respondWith(
-    caches.match(req).then((cached) => {
-      const network = fetch(req).then((res) => {
+    fetch(req)
+      .then((res) => {
         if (res && res.status === 200) {
           const copy = res.clone();
           caches.open(CACHE).then((c) => c.put(req, copy));
         }
         return res;
-      }).catch(() => cached);
-      return cached || network;
-    })
+      })
+      .catch(() => caches.match(req))
   );
 });

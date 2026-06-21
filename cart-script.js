@@ -156,8 +156,11 @@ async function submitOrder() {
   } catch (err) {
     orderBtn.disabled = false;
     orderBtn.innerHTML = '<i class="fa-solid fa-check"></i> Confirmer la commande';
-    alert("Erreur lors de l'envoi. Réessayez.");
-    console.error(err);
+    const msg = !navigator.onLine
+      ? "Pas de connexion internet. Vérifiez votre réseau et réessayez."
+      : "Impossible d'envoyer la commande. Vérifiez votre connexion et réessayez.";
+    alert(msg);
+    console.error("Échec de l'envoi de la commande:", err);
   }
 }
 
