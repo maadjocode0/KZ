@@ -489,8 +489,38 @@ body.header-visible .site-header { transform: translateY(0); }
   align-items: center;
   gap: 0.6rem;
   text-decoration: none;
-  margin-right: auto;
+  flex-shrink: 0;
 }
+
+.header-search {
+  flex: 1 1 200px;
+  min-width: 130px;
+  max-width: 420px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: 999px;
+  padding: 0.5rem 0.95rem;
+  transition: border-color 0.2s, background 0.2s;
+}
+.header-search:focus-within {
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.12);
+}
+.header-search i { color: var(--accent); font-size: 0.9rem; flex-shrink: 0; }
+.header-search input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 0.9rem;
+  font-family: "Inter", sans-serif;
+}
+.header-search input::placeholder { color: rgba(255, 255, 255, 0.5); }
 .brand-logo {
   height: 42px;
   width: auto;
@@ -575,16 +605,12 @@ body.header-visible .site-header { transform: translateY(0); }
 .cart-badge.pop { animation: badgePop 0.35s ease; }
 
 @media (max-width: 600px) {
-  .brand { order: 1; }
+  .brand { order: 1; margin-right: auto; }
   .header-cart { order: 2; }
-  .header-links {
-    order: 3;
-    flex-basis: 100%;
-    justify-content: center;
-    gap: 1.75rem;
-    padding-top: 0.55rem;
-    border-top: 1px solid rgba(201, 168, 76, 0.18);
-  }
+  .header-search { order: 3; flex-basis: 100%; max-width: none; }
+  /* On mobile the category pills + footer cover navigation, so the header
+     keeps to two rows (brand + cart, then search) instead of crowding. */
+  .header-links { display: none; }
   .brand-name { font-size: 1.3rem; }
   .brand-logo { height: 38px; }
 }
