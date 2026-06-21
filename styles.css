@@ -461,10 +461,14 @@ h1, h2, h3, h4, p { margin: 0; }
   font-size: 0.95rem;
   font-style: italic;
 }
-/* ===== Sticky site header ===== */
+/* ===== Collapsing site header =====
+   The full hero shows on load; this compact bar is parked above the viewport
+   and slides down once the user scrolls past the hero (.header-visible on body). */
 .site-header {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 110;
   display: flex;
   align-items: center;
@@ -473,8 +477,12 @@ h1, h2, h3, h4, p { margin: 0; }
   padding: 0.55rem 1rem;
   background: var(--green);
   border-bottom: 1px solid rgba(201, 168, 76, 0.3);
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35);
+  transform: translateY(-105%);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+body.header-visible .site-header { transform: translateY(0); }
 
 .brand {
   display: flex;

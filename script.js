@@ -70,6 +70,26 @@ function syncStickyOffsets() {
   if (catnav) root.style.setProperty("--catnav-h", catnav.offsetHeight + "px");
 }
 
+// Show the full hero on load; slide the compact header in once it's scrolled past.
+function setupCollapsingHeader() {
+  const hero = document.querySelector(".hero");
+  const header = document.querySelector(".site-header");
+  if (!header) return;
+  let shown = false;
+  const update = () => {
+    const heroH = hero ? hero.offsetHeight : 280;
+    const threshold = Math.max(heroH - header.offsetHeight - 8, 40);
+    const should = window.scrollY > threshold;
+    if (should !== shown) {
+      shown = should;
+      document.body.classList.toggle("header-visible", should);
+    }
+  };
+  update();
+  window.addEventListener("scroll", update, { passive: true });
+  window.addEventListener("resize", update, { passive: true });
+}
+
 function escName(name) {
   return String(name).replace(/'/g, "\\'");
 }
@@ -353,6 +373,7 @@ async function init() {
   setupScrollSpy();
   setupSearch();
   syncStickyOffsets();
+  setupCollapsingHeader();
 }
 
 document.addEventListener("DOMContentLoaded", init);
