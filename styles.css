@@ -18,6 +18,14 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
+html { scroll-behavior: smooth; }
+
+/* Anchor targets land below the fixed header + sticky category nav, not under them. */
+.section,
+.menu-category {
+  scroll-margin-top: calc(var(--header-h, 64px) + var(--catnav-h, 52px) + 12px);
+}
+
 body {
   margin: 0;
   font-family: "Inter", -apple-system, sans-serif;
