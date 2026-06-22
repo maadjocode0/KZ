@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Staff & utility pages must never be indexed
+Disallow: /login.html
+Disallow: /pos.html
+Disallow: /admin.html
+Disallow: /report.html
+Disallow: /qr.html
+
+Sitemap: https://kz-lounge-psi.vercel.app/sitemap.xml

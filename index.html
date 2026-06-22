@@ -4,17 +4,68 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#1c1c1c" />
+
+  <title>KZ Café Lounge — Café, Lounge & Restaurant à Bardo, Tunis</title>
+  <meta name="description" content="KZ Café Lounge à Bardo, Tunis : carte digitale de café, petit-déjeuner, jus, cocktails, pizzas, pâtes, fruits de mer, desserts et chicha. Commandez depuis votre table." />
+  <link rel="canonical" href="https://kz-lounge-psi.vercel.app/" />
+
+  <!-- Open Graph / social sharing -->
+  <meta property="og:type" content="restaurant" />
+  <meta property="og:site_name" content="KZ Café Lounge" />
+  <meta property="og:title" content="KZ Café Lounge — Bardo, Tunis" />
+  <meta property="og:description" content="Café · Lounge · Restaurant à Bardo. Consultez la carte et commandez depuis votre table." />
+  <meta property="og:url" content="https://kz-lounge-psi.vercel.app/" />
+  <meta property="og:image" content="https://kz-lounge-psi.vercel.app/icon-512.png" />
+  <meta property="og:locale" content="fr_TN" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="KZ Café Lounge — Bardo, Tunis" />
+  <meta name="twitter:description" content="Café · Lounge · Restaurant à Bardo. Carte digitale & commande à table." />
+  <meta name="twitter:image" content="https://kz-lounge-psi.vercel.app/icon-512.png" />
+
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="apple-touch-icon" href="icon-192.png" />
-  <title>KZ Café Lounge | Bardo</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://ecbhkcnhgyrppqzrczsz.supabase.co" />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="styles.css" />
+
+  <!-- Structured data: helps Google show hours, phone, location in search/maps -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CafeOrCoffeeShop",
+    "name": "KZ Café Lounge",
+    "image": "https://kz-lounge-psi.vercel.app/icon-512.png",
+    "url": "https://kz-lounge-psi.vercel.app/",
+    "telephone": "+216 58 890 656",
+    "servesCuisine": ["Café", "Tunisienne", "Pizza", "Pâtes", "Fruits de mer"],
+    "priceRange": "$$",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Bardo",
+      "addressRegion": "Tunis",
+      "addressCountry": "TN"
+    },
+    "openingHoursSpecification": [{
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+      "opens": "08:00",
+      "closes": "00:00"
+    }],
+    "sameAs": [
+      "https://www.instagram.com/kzed_cafelounge/",
+      "https://www.facebook.com/profile.php?id=61559121256736"
+    ]
+  }
+  </script>
 </head>
 <body>
+
+  <a class="skip-link" href="#menu">Aller au menu</a>
 
   <section class="hero">
     <div class="hero-card">

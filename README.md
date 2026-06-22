@@ -30,6 +30,9 @@ Tout le menu vit dans [`menu-data.js`](menu-data.js) (`MENU_DATA`). ⚠️ Chaqu
 homonymes (ex. « Nutella » présent dans plusieurs sections) fusionneraient. C'est pourquoi les noms
 répétés sont préfixés par leur section (`Crêpe Nutella`, `Milkshake Nutella`, `Chocolat Nutella`…).
 
+> Lancez **`node test.mjs`** pour vérifier automatiquement l'intégrité du menu :
+> noms d'articles uniques, prix valides, structure et slugs de catégories. (440 checks.)
+
 ## Lancer en local
 
 Projet 100 % statique. Servez le dossier avec un serveur HTTP statique :
