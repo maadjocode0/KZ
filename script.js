@@ -45,22 +45,19 @@ function setCart(cart) {
 function updateCartBadge() {
   const cart = getCart();
   const total = cart.reduce((sum, i) => sum + i.qty, 0);
-  // Header cart + floating cart both carry a .cart-badge — keep them in sync.
-  document.querySelectorAll(".cart-badge").forEach((badge) => {
+  const badge = document.getElementById("cartBadge");
+  if (badge) {
     badge.textContent = total;
     badge.classList.toggle("hidden", total === 0);
-  });
+  }
 }
 
-// Bounce both carts + pop their badges when an item is added (whichever is
-// currently visible — header or floating — animates in view).
+// Bounce the header cart + pop the badge when an item is added.
 function bumpCart() {
-  document.querySelectorAll("#headerCart, #floatingCart").forEach((cart) => {
-    cart.classList.remove("bump"); void cart.offsetWidth; cart.classList.add("bump");
-  });
-  document.querySelectorAll(".cart-badge").forEach((badge) => {
-    badge.classList.remove("pop"); void badge.offsetWidth; badge.classList.add("pop");
-  });
+  const cart = document.getElementById("headerCart");
+  const badge = document.getElementById("cartBadge");
+  if (cart) { cart.classList.remove("bump"); void cart.offsetWidth; cart.classList.add("bump"); }
+  if (badge) { badge.classList.remove("pop"); void badge.offsetWidth; badge.classList.add("pop"); }
 }
 
 // Keep the sticky category-nav and search bar parked right under the header,
