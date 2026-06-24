@@ -31,11 +31,34 @@
       </div>
     </div>
 
-    <div class="range-tabs" id="rangeTabs">
-      <button class="filter-tab active" data-range="today" onclick="setRange('today')">Aujourd'hui</button>
-      <button class="filter-tab" data-range="7" onclick="setRange('7')">7 jours</button>
-      <button class="filter-tab" data-range="30" onclick="setRange('30')">30 jours</button>
-      <button class="filter-tab" data-range="all" onclick="setRange('all')">Tout</button>
+    <div class="report-controls">
+      <div class="range-tabs" id="rangeTabs">
+        <button class="filter-tab active" data-range="today" onclick="setRange('today')">Aujourd'hui</button>
+        <button class="filter-tab" data-range="7" onclick="setRange('7')">7 jours</button>
+        <button class="filter-tab" data-range="30" onclick="setRange('30')">30 jours</button>
+        <button class="filter-tab" data-range="all" onclick="setRange('all')">Tout</button>
+      </div>
+
+      <div class="custom-range">
+        <label>Du <input type="date" id="dateFrom" /></label>
+        <label>au <input type="date" id="dateTo" /></label>
+        <button class="filter-tab" id="applyRange" onclick="applyCustomRange()">Appliquer</button>
+      </div>
+
+      <div class="cat-filter">
+        <button class="filter-tab cat-filter-btn" id="catFilterBtn" onclick="toggleCatFilter(event)">
+          <i class="fa-solid fa-layer-group"></i>
+          <span id="catFilterLabel">Toutes les catégories</span>
+          <i class="fa-solid fa-chevron-down" style="font-size:0.7rem"></i>
+        </button>
+        <div class="cat-filter-panel" id="catFilterPanel" hidden>
+          <div class="cat-filter-actions">
+            <button type="button" onclick="setAllCats(true)">Tout</button>
+            <button type="button" onclick="setAllCats(false)">Aucune</button>
+          </div>
+          <div class="cat-filter-list" id="catFilterList"></div>
+        </div>
+      </div>
     </div>
 
     <div id="reportRoot">

@@ -3,6 +3,9 @@ let ALL_FEEDBACK = [];
 let currentRange = "today";
 let catChartRef = null;
 let dayChartRef = null;
+let selectedCats = new Set(); // empty = all categories
+let customFrom = null;
+let customTo = null;
 
 async function ensureAuth() {
   const token = sessionStorage.getItem("kz_token");
@@ -28,7 +31,11 @@ function rangeStart() {
 }
 
 function inRange(iso) {
-  return new Date(iso) >= rangeStart();
+  const d = new Date(iso);
+  if (currentRange === "custom") {
+    return (!customFrom || d >= customFrom) && (!customTo || d <= customTo);
+  }
+  return d >= rangeStart();
 }
 
 function dayKey(iso) {
@@ -40,7 +47,88 @@ function setRange(range) {
   currentRange = range;
   document.querySelectorAll("#rangeTabs .filter-tab").forEach(t =>
     t.classList.toggle("active", t.dataset.range === range));
+  const applyBtn = document.getElementById("applyRange");
+  if (applyBtn) applyBtn.classList.remove("active");
   render();
+}
+
+function applyCustomRange() {
+  const f = document.getElementById("dateFrom").value;
+  const t = document.getElementById("dateTo").value;
+  if (!f && !t) return;
+  customFrom = f ? new Date(f + "T00:00:00") : new Date(0);
+  customTo = t ? new Date(t + "T23:59:59.999") : new Date();
+  if (customFrom > customTo) { const tmp = customFrom; customFrom = customTo; customTo = tmp; }
+  currentRange = "custom";
+  document.querySelectorAll("#rangeTabs .filter-tab").forEach(x => x.classList.remove("active"));
+  const applyBtn = document.getElementById("applyRange");
+  if (applyBtn) applyBtn.classList.add("active");
+  render();
+}
+
+// ===== Category filter (empty selection = all categories) =====
+function matchCat(name) {
+  return selectedCats.size === 0 || selectedCats.has(itemCategory(name) || "Autres");
+}
+
+function populateCatFilter() {
+  const list = document.getElementById("catFilterList");
+  if (!list || typeof MENU_DATA === "undefined") return;
+  list.innerHTML = MENU_DATA.map(b =>
+    `<label class="cat-opt"><input type="checkbox" value="${escapeHtml(b.category)}" onchange="onCatChange()" /> ${escapeHtml(b.category)}</label>`
+  ).join("");
+}
+
+function onCatChange() {
+  selectedCats = new Set(
+    [...document.querySelectorAll("#catFilterList input:checked")].map(i => i.value)
+  );
+  updateCatLabel();
+  render();
+}
+
+function setAllCats(all) {
+  document.querySelectorAll("#catFilterList input").forEach(i => { i.checked = all; });
+  onCatChange();
+}
+
+function updateCatLabel() {
+  const label = document.getElementById("catFilterLabel");
+  if (label) {
+    label.textContent = selectedCats.size === 0
+      ? "Toutes les catégories"
+      : `${selectedCats.size} catégorie${selectedCats.size > 1 ? "s" : ""}`;
+  }
+  const btn = document.getElementById("catFilterBtn");
+  if (btn) btn.classList.toggle("active", selectedCats.size > 0);
+}
+
+function toggleCatFilter(e) {
+  if (e) e.stopPropagation();
+  const panel = document.getElementById("catFilterPanel");
+  if (panel) panel.hidden = !panel.hidden;
+}
+
+function clearFilters() {
+  selectedCats = new Set();
+  document.querySelectorAll("#catFilterList input").forEach(i => { i.checked = false; });
+  updateCatLabel();
+  const df = document.getElementById("dateFrom"); if (df) df.value = "";
+  const dt = document.getElementById("dateTo"); if (dt) dt.value = "";
+  setRange("today");
+}
+
+function filterSummaryHTML(filtering) {
+  const parts = [];
+  if (currentRange === "custom" && (customFrom || customTo)) {
+    const fmt = (d) => d ? d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" }) : "…";
+    parts.push(`<span><i class="fa-solid fa-calendar-day"></i> ${fmt(customFrom)} → ${fmt(customTo)}</span>`);
+  }
+  if (filtering) {
+    parts.push(`<span><i class="fa-solid fa-layer-group"></i> ${[...selectedCats].map(escapeHtml).join(", ")}</span>`);
+  }
+  if (!parts.length) return "";
+  return `<div class="filter-summary">Filtre actif — ${parts.join(" · ")}<button class="filter-clear" onclick="clearFilters()">Réinitialiser</button></div>`;
 }
 
 function bar(value, max) {
@@ -87,14 +175,26 @@ function render() {
   const orders = ALL_ORDERS.filter(o => inRange(o.created_at));
   const done = orders.filter(o => o.status === "done");
   const cancelled = orders.filter(o => o.status === "cancelled");
+  const filtering = selectedCats.size > 0;
 
-  const revenue = done.reduce((s, o) => s + Number(o.total), 0);
-  const count = done.length;
+  // Per-order revenue, narrowed to the selected categories when a filter is active.
+  // (No filter => use the order total, which equals the sum of all its items.)
+  const orderRevenue = (o) => filtering
+    ? (o.items || []).reduce((s, it) => s + (matchCat(it.name) ? Number(it.price) * it.qty : 0), 0)
+    : Number(o.total);
+
+  let revenue = 0, count = 0;
+  done.forEach(o => {
+    const r = orderRevenue(o);
+    revenue += r;
+    if (!filtering || r > 0) count++; // orders served = orders containing the selected category
+  });
   const avg = count ? revenue / count : 0;
 
   const itemMap = new Map();
   const catMap = new Map();
   done.forEach(o => (o.items || []).forEach(it => {
+    if (!matchCat(it.name)) return;
     const lineRevenue = Number(it.price) * it.qty;
     const cur = itemMap.get(it.name) || { qty: 0, revenue: 0 };
     cur.qty += it.qty; cur.revenue += lineRevenue;
@@ -118,16 +218,19 @@ function render() {
 
   const dayMap = new Map(); // sortKey (yyyy-mm-dd) -> { label, rev }
   done.forEach(o => {
+    const dayRev = orderRevenue(o);
+    if (dayRev <= 0) return;
     const d = new Date(o.created_at);
     const sortKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     const cur = dayMap.get(sortKey) || { label: dayKey(o.created_at), rev: 0 };
-    cur.rev += Number(o.total);
+    cur.rev += dayRev;
     dayMap.set(sortKey, cur);
   });
   const days = [...dayMap.entries()].sort((a, b) => (a[0] < b[0] ? -1 : 1)).map(([, v]) => ({ k: v.label, rev: v.rev }));
 
   const root = document.getElementById("reportRoot");
   root.innerHTML = `
+    ${filterSummaryHTML(filtering)}
     <div class="stats-bar">
       <div class="stat-card highlight">
         <span class="stat-label">Chiffre d'affaires</span>
@@ -253,5 +356,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   } catch (e) {
     ALL_FEEDBACK = [];
   }
+  populateCatFilter();
+  document.addEventListener("click", (e) => {
+    const panel = document.getElementById("catFilterPanel");
+    const btn = document.getElementById("catFilterBtn");
+    if (panel && !panel.hidden && !panel.contains(e.target) && btn && !btn.contains(e.target)) {
+      panel.hidden = true;
+    }
+  });
   render();
 });
