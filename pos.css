@@ -26,6 +26,21 @@ body.pos-body {
   align-items: center;
 }
 
+.pos-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+}
+
+.pos-brand img {
+  width: 38px;
+  height: 46px;
+  object-fit: contain;
+  display: block;
+  flex-shrink: 0;
+}
+
 .pos-brand strong {
   font-family: "Cormorant Garamond", serif;
   font-size: 1.3rem;
@@ -54,6 +69,12 @@ body.pos-body {
   transition: color 0.2s, border-color 0.2s;
 }
 .pos-link:hover { color: #c9a84c; border-color: #c9a84c; }
+
+.pos-link.active {
+  color: #c9a84c;
+  border-color: #c9a84c;
+  background: rgba(201, 168, 76, 0.1);
+}
 
 .pos-logout {
   background: transparent;

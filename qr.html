@@ -8,9 +8,12 @@
   <title>KZ | QR codes des tables</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs@gh-pages/qrcode.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="pos.css" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: "Inter", sans-serif; background: #f5f2eb; color: #1a1a0e; padding: 1.5rem; }
+    .pos-topbar { max-width: 900px; margin: 0 auto 1.5rem; }
     .wrap { max-width: 900px; margin: 0 auto; }
     h1 { font-family: "Cormorant Garamond", serif; color: #1a3a2a; font-size: 2rem; margin-bottom: 0.25rem; }
     .sub { color: #6b6347; font-size: 0.9rem; margin-bottom: 1.5rem; }
@@ -55,6 +58,20 @@
   </style>
 </head>
 <body>
+  <header class="pos-topbar no-print">
+    <div class="pos-brand">
+      <img src="logo-kz.png" alt="KZ Café Lounge" width="38" height="46" />
+      <strong>KZ Café Lounge</strong>
+    </div>
+    <nav class="pos-right">
+      <a class="pos-link" href="pos.html"><i class="fa-solid fa-table-columns"></i> POS</a>
+      <a class="pos-link" href="report.html"><i class="fa-solid fa-chart-line"></i> Rapport</a>
+      <a class="pos-link" href="admin.html"><i class="fa-solid fa-sliders"></i> Menu</a>
+      <a class="pos-link active" href="qr.html" aria-current="page"><i class="fa-solid fa-qrcode"></i> QR</a>
+      <button class="pos-logout" onclick="logout()" aria-label="Se déconnecter"><i class="fa-solid fa-right-from-bracket"></i></button>
+    </nav>
+  </header>
+
   <div class="wrap">
     <h1>QR codes des tables</h1>
     <p class="sub">30 QR codes (tables 1 à 30). En scannant, le client ouvre le menu avec sa table déjà sélectionnée.</p>
@@ -71,6 +88,7 @@
     <div id="grid" class="grid"></div>
   </div>
 
+  <script src="supabase.js"></script>
   <script>
     function defaultBase() {
       return new URL("index.html", window.location.href).href;

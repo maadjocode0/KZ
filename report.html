@@ -19,17 +19,19 @@
 <body class="pos-body">
   <div class="pos-shell">
 
-    <div class="pos-topbar">
+    <header class="pos-topbar">
       <div class="pos-brand">
+        <img src="logo-kz.png" alt="KZ Café Lounge" width="38" height="46" />
         <strong>KZ Café Lounge</strong>
-        <span>Rapport des ventes</span>
       </div>
-      <div class="pos-right">
+      <nav class="pos-right">
         <a class="pos-link" href="pos.html"><i class="fa-solid fa-table-columns"></i> POS</a>
+        <a class="pos-link active" href="report.html" aria-current="page"><i class="fa-solid fa-chart-line"></i> Rapport</a>
         <a class="pos-link" href="admin.html"><i class="fa-solid fa-sliders"></i> Menu</a>
-        <button class="pos-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button>
-      </div>
-    </div>
+        <a class="pos-link" href="qr.html"><i class="fa-solid fa-qrcode"></i> QR</a>
+        <button class="pos-logout" onclick="logout()" aria-label="Se déconnecter"><i class="fa-solid fa-right-from-bracket"></i></button>
+      </nav>
+    </header>
 
     <div class="report-controls">
       <div class="range-tabs" id="rangeTabs">
