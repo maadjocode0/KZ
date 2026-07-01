@@ -586,10 +586,16 @@ body.pos-body {
 
 @media (max-width: 600px) {
   .pos-shell { padding: 0.75rem; gap: 0.6rem; }
-  .pos-topbar { flex-wrap: wrap; gap: 0.6rem; padding: 0.85rem 1rem; }
+  .pos-topbar { flex-wrap: wrap; gap: 0.6rem 0.5rem; padding: 0.85rem 1rem; }
   .pos-brand strong { font-size: 1.15rem; }
-  .pos-right { flex-wrap: wrap; gap: 0.4rem; }
+  .pos-brand img { width: 32px; height: 39px; }
+  /* Keep the controls (dropdown · clock · logout) hugging the right even when
+     they wrap onto their own line, so the right-anchored dropdown panel opens
+     on-screen instead of off the left edge. */
+  .pos-right { flex-wrap: wrap; justify-content: flex-end; gap: 0.4rem; margin-left: auto; }
   .pos-link { padding: 0.35rem 0.65rem; font-size: 0.72rem; }
+  .pos-menu > summary { padding: 0.35rem 0.7rem; font-size: 0.75rem; }
+  .pos-menu-panel { max-width: calc(100vw - 2rem); }
   .pos-time { font-size: 0.85rem; }
   .stats-bar { grid-template-columns: repeat(2, 1fr); }
   .pos-orders { grid-template-columns: 1fr; }
