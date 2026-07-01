@@ -25,10 +25,15 @@
         <strong>KZ Café Lounge</strong>
       </div>
       <nav class="pos-right">
-        <a class="pos-link" href="pos.html"><i class="fa-solid fa-table-columns"></i> POS</a>
-        <a class="pos-link active" href="report.html" aria-current="page"><i class="fa-solid fa-chart-line"></i> Rapport</a>
-        <a class="pos-link" href="admin.html"><i class="fa-solid fa-sliders"></i> Menu</a>
-        <a class="pos-link" href="qr.html"><i class="fa-solid fa-qrcode"></i> QR</a>
+        <details class="pos-menu">
+          <summary aria-haspopup="menu"><i class="fa-solid fa-chart-line"></i> <span>Rapport</span> <i class="fa-solid fa-chevron-down pos-menu-caret"></i></summary>
+          <div class="pos-menu-panel">
+            <a href="pos.html"><i class="fa-solid fa-table-columns"></i> POS</a>
+            <a class="active" href="report.html" aria-current="page"><i class="fa-solid fa-chart-line"></i> Rapport</a>
+            <a href="admin.html"><i class="fa-solid fa-sliders"></i> Menu</a>
+            <a href="qr.html"><i class="fa-solid fa-qrcode"></i> QR</a>
+          </div>
+        </details>
         <button class="pos-logout" onclick="logout()" aria-label="Se déconnecter"><i class="fa-solid fa-right-from-bracket"></i></button>
       </nav>
     </header>
@@ -73,5 +78,6 @@
   <script src="menu-data.js"></script>
   <script src="supabase.js"></script>
   <script src="report-script.js"></script>
+  <script src="staff-nav.js"></script>
 </body>
 </html>

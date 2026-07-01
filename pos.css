@@ -76,6 +76,65 @@ body.pos-body {
   background: rgba(201, 168, 76, 0.1);
 }
 
+
+/* Staff nav — collapse the page links into a dropdown */
+.pos-menu { position: relative; display: inline-flex; align-items: center; }
+
+.pos-menu > summary {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #c9a84c;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid #30363d;
+  border-radius: 999px;
+  user-select: none;
+  transition: border-color 0.2s;
+}
+.pos-menu > summary::-webkit-details-marker { display: none; }
+.pos-menu > summary::marker { content: ""; }
+.pos-menu > summary:hover,
+.pos-menu[open] > summary { border-color: #c9a84c; }
+
+.pos-menu-caret { font-size: 0.65rem; transition: transform 0.2s; }
+.pos-menu[open] .pos-menu-caret { transform: rotate(180deg); }
+
+.pos-menu-panel {
+  position: absolute;
+  top: calc(100% + 0.45rem);
+  right: 0;
+  z-index: 50;
+  min-width: 190px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.4rem;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+.pos-menu-panel a {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #8b949e;
+  text-decoration: none;
+  padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+  transition: background 0.15s, color 0.15s;
+}
+.pos-menu-panel a i { width: 1.1rem; text-align: center; }
+.pos-menu-panel a:hover { background: #21262d; color: #c9a84c; }
+.pos-menu-panel a.active { color: #c9a84c; background: rgba(201, 168, 76, 0.12); }
+
 .pos-logout {
   background: transparent;
   border: 1px solid #30363d;
